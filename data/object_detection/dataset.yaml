@@ -1,0 +1,24 @@
+# ISRO BAS HAR — Custom Apparatus Object Detection Dataset Config
+# Architecture target: Ultralytics YOLOv8n / YOLO11n
+# Offline Edge Inference Target: NVIDIA GTX 1650 (4GB VRAM)
+
+path: ../object_detection  # dataset root dir (relative to data/object_detection or absolute)
+train: images/train        # train images (relative to 'path')
+val: images/val            # val images (relative to 'path')
+test: images/test          # test images (optional, relative to 'path')
+
+# 7 Visually Distinct Space Laboratory Apparatus Classes
+names:
+  0: micropipette
+  1: pipette_tip_box
+  2: sample_vial
+  3: well_plate
+  4: centrifuge
+  5: waste_bin
+  6: chamber_door_latch
+
+# Metadata
+metadata:
+  version: "1.0.0"
+  protocol: "ISRO_PS_26174_SYNTHETIC_DEMO"
+  description: "Custom apparatus object detection dataset for on-board space laboratory operations."

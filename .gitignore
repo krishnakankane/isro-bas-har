@@ -1,0 +1,87 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# PyCharm / VSCode / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large Model Weights & Raw Datasets
+models/*.pt
+models/*.onnx
+models/*.engine
+models/mediapipe/*.task
+data/raw/videos/*
+!data/raw/videos/.gitkeep
+data/raw/metadata/*
+!data/raw/metadata/.gitkeep
+data/recordings/*
+!data/recordings/.gitkeep
+data/object_detection/images/*/*
+!data/object_detection/images/*/.gitkeep
+data/object_detection/labels/*/*
+!data/object_detection/labels/*/.gitkeep
+data/temporal_har/videos/*
+!data/temporal_har/videos/.gitkeep
+data/temporal_har/features/*
+!data/temporal_har/features/.gitkeep
+data/temporal_har/manifests/*
+!data/temporal_har/manifests/.gitkeep
+data/temporal_har/splits/*
+!data/temporal_har/splits/.gitkeep
+data/sequence_validation/manifests/*
+!data/sequence_validation/manifests/.gitkeep
+outputs/recordings/*.mp4
+logs/*.db
+logs/*.jsonl
+logs/snapshots/*.jpg
+
+# System
+Thumbs.db
+Desktop.ini
+
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Runtime logs
+data/runtime/
+
+# Include trained HAR checkpoint
+!models/har/conv1d_bigru_best.pt
+
+# Include required MediaPipe runtime models
+!models/mediapipe/hand_landmarker.task
+!models/mediapipe/pose_landmarker_lite.task

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISRO BAS-HAR — Operator Mission Dashboard & Evaluator System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- ── Top Aerospace Header Bar ────────────────────────────────────────── -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="isro-logo-badge">ISRO</div>
+      <div class="brand-text">
+        <h1>BAS-HAR <span>OPERATOR MISSION DASHBOARD</span></h1>
+        <p class="subtext">AI/ML-based astronaut activity recognition and protocol monitoring prototype</p>
+      </div>
+    </div>
+
+    <div class="header-telemetry">
+      <div class="meta-pill">
+        <span class="pill-label">PROTOCOL</span>
+        <span class="pill-val" id="meta-protocol">HOME_DEMO_PROTOCOL_01</span>
+      </div>
+      <div class="meta-pill">
+        <span class="pill-label">SESSION</span>
+        <span class="pill-val" id="meta-session">SES_001_NOMINAL</span>
+      </div>
+      <div class="meta-pill">
+        <span class="pill-label">DEVICE</span>
+        <span class="pill-val" id="meta-device">CUDA / GPU</span>
+      </div>
+      <div class="system-status-badge" id="system-status-badge">
+        <span class="status-dot"></span>
+        <span id="system-status-text">PROTOCOL ARMED</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── System Readiness & Lifecycle Bar ───────────────────────────────── -->
+  <section class="readiness-section">
+    <div class="readiness-header">
+      <span class="readiness-title">SYSTEM READINESS & COMPONENT HEALTH</span>
+      <span class="readiness-lifecycle" id="readiness-lifecycle-badge">LIFECYCLE: PROTOCOL ARMED</span>
+    </div>
+    <div class="readiness-chips-grid" id="readiness-grid">
+      <div class="chk-chip ready" id="chk-camera"><span class="chk-icon">✓</span> Camera Ingestion</div>
+      <div class="chk-chip ready" id="chk-yolo"><span class="chk-icon">✓</span> YOLO Object Detection</div>
+      <div class="chk-chip ready" id="chk-pose"><span class="chk-icon">✓</span> MediaPipe Pose (33 3D)</div>
+      <div class="chk-chip ready" id="chk-hands"><span class="chk-icon">✓</span> Dual Hand Tracker (21×2)</div>
+      <div class="chk-chip ready" id="chk-hoi"><span class="chk-icon">✓</span> HOI Analysis Engine</div>
+      <div class="chk-chip ready" id="chk-features"><span class="chk-icon">✓</span> 154-D Spatial-Temporal</div>
+      <div class="chk-chip ready" id="chk-har"><span class="chk-icon">✓</span> Conv1D-BiGRU-Attention HAR</div>
+      <div class="chk-chip ready" id="chk-fsm"><span class="chk-icon">✓</span> Deterministic Protocol FSM</div>
+    </div>
+  </section>
+
+  <!-- Error Notification Banner -->
+  <div class="error-banner" id="system-error-banner" style="display: none;">
+    <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div class="error-text">
+      <strong>SYSTEM ERROR:</strong> <span id="system-error-msg">Camera device unavailable or offline.</span>
+    </div>
+    <button class="btn btn-small btn-danger" onclick="dismissError()">DISMISS</button>
+  </div>
+
+  <!-- ── Main Dashboard Content Grid ────────────────────────────────────── -->
+  <main class="dashboard-grid">
+
+    <!-- ── Left Column: Live Vision Feed & Controls ────────────────────── -->
+    <section class="panel camera-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          LIVE PERCEPTION & HUD STREAM
+        </div>
+        <div class="camera-telemetry-tags">
+          <span class="tag" id="feed-source-tag">SOURCE: STANDBY</span>
+          <span class="tag" id="feed-res-tag">1280 × 720</span>
+          <span class="tag live-tag" id="feed-fps-tag">0.0 FPS (STREAM)</span>
+        </div>
+      </div>
+
+      <div class="video-container" id="video-wrapper">
+        <img id="live-video-img" src="/video_feed" alt="Live Perception Stream" onerror="handleVideoError()" />
+        
+        <!-- Standby Placeholder -->
+        <div class="video-overlay-placeholder" id="video-placeholder">
+          <div class="placeholder-content">
+            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <h3>SYSTEM READINESS CONFIRMED</h3>
+            <p>Click <strong>START WEBCAM</strong> or <strong>START DEMO</strong> below to begin real-time activity recognition.</p>
+          </div>
+        </div>
+
+        <!-- Mission Complete Overlay -->
+        <div class="mission-complete-overlay" id="mission-complete-modal" style="display: none;">
+          <div class="complete-modal-card">
+            <div class="complete-icon">🎖️</div>
+            <h2>MISSION COMPLETE</h2>
+            <p class="complete-subtitle">Protocol HOME_DEMO_PROTOCOL_01 successfully executed and verified (10/10 steps).</p>
+            <div class="complete-stats-row">
+              <div class="c-stat"><span class="c-lbl">DURATION</span><span class="c-val" id="mc-dur">01:42.8s</span></div>
+              <div class="c-stat"><span class="c-lbl">AVG CONFIDENCE</span><span class="c-val status-ok" id="mc-conf">98.4%</span></div>
+              <div class="c-stat"><span class="c-lbl">ANOMALIES</span><span class="c-val" id="mc-anom">0</span></div>
+            </div>
+            <div class="complete-actions">
+              <button class="btn btn-primary" onclick="resetSession(); startDemoVideo();">RUN AGAIN</button>
+              <button class="btn btn-outline" onclick="dismissCompleteModal()">REVIEW TELEMETRY</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Bar -->
+      <div class="control-actions-bar">
+        <button class="btn btn-primary" id="btn-start-webcam" onclick="startWebcam()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          START WEBCAM
+        </button>
+        <button class="btn btn-secondary" id="btn-start-video" onclick="startDemoVideo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          START DEMO (SES_001)
+        </button>
+        <button class="btn btn-danger" id="btn-stop" onclick="stopPipeline()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
+          STOP
+        </button>
+        <button class="btn btn-outline" id="btn-reset" onclick="resetSession()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          RESET MISSION
+        </button>
+      </div>
+
+      <!-- Evaluator Controlled Anomaly Demonstration Bar -->
+      <div class="evaluator-demo-bar">
+        <div class="demo-bar-label">
+          <span class="badge badge-sim">🧪 EVALUATOR DEMO</span>
+          <span>Controlled Anomaly Injection (Simulated Mode):</span>
+        </div>
+        <div class="demo-bar-actions">
+          <button class="btn btn-demo" onclick="injectAnomaly('OUT_OF_ORDER_ACTION')">OUT OF ORDER</button>
+          <button class="btn btn-demo" onclick="injectAnomaly('UNEXPECTED_ACTION')">UNEXPECTED</button>
+          <button class="btn btn-demo" onclick="injectAnomaly('REPEATED_ACTION')">REPEATED</button>
+          <button class="btn btn-demo" onclick="injectAnomaly('LOW_CONFIDENCE')">LOW CONFIDENCE</button>
+          <button class="btn btn-demo" onclick="injectAnomaly('TIMEOUT_EXCEEDED')">TIMEOUT</button>
+        </div>
+      </div>
+
+      <!-- Confidence History Sparkline Section -->
+      <div class="confidence-history-panel">
+        <div class="subpanel-header">
+          <span class="subpanel-title">REAL-TIME HAR CONFIDENCE HISTORY (LAST 40 FRAMES)</span>
+          <span class="gate-legend"><span class="gate-line-sample"></span> 65% GATE THRESHOLD</span>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="confidence-canvas" width="600" height="80"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Right Column: AI HAR, Protocol, & Anomaly Cards ─────────────── -->
+    <div class="right-column">
+
+      <!-- HAR Activity Card -->
+      <div class="card har-card">
+        <div class="card-header">
+          <span class="card-label">TEMPORAL HUMAN ACTIVITY RECOGNITION</span>
+          <span class="badge badge-tech">Conv1D-BiGRU-Attention</span>
+        </div>
+        <div class="har-action-box">
+          <div class="har-action-name" id="har-action-text">ACTION_IDLE</div>
+          <div class="har-confidence-val" id="har-confidence-text">100.0%</div>
+        </div>
+        
+        <!-- Animated Confidence Progress Bar -->
+        <div class="confidence-bar-container">
+          <div class="confidence-bar-fill" id="confidence-bar" style="width: 100%;"></div>
+        </div>
+
+        <div class="har-meta-grid">
+          <div class="meta-item">
+            <span class="lbl">WINDOW</span>
+            <span class="val" id="har-buffer-val">60 Frames [FULL]</span>
+          </div>
+          <div class="meta-item">
+            <span class="lbl">FEATURE DIM</span>
+            <span class="val">154-D Vectors</span>
+          </div>
+          <div class="meta-item">
+            <span class="lbl">THRESHOLD</span>
+            <span class="val">65% Gate</span>
+          </div>
+          <div class="meta-item">
+            <span class="lbl">PREDICTION STATUS</span>
+            <span class="val status-ok" id="har-pred-status">CONFIDENT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Protocol Status Card -->
+      <div class="card protocol-card">
+        <div class="card-header">
+          <span class="card-label">EXPERIMENT PROTOCOL FSM (10-STEP TAXONOMY)</span>
+          <span class="badge" id="protocol-status-badge">WAITING</span>
+        </div>
+        <div class="protocol-body-grid">
+          <div class="proto-stat">
+            <span class="lbl">CURRENT STEP</span>
+            <span class="val highlight" id="protocol-step-text">STEP 1 / 10 (IDLE)</span>
+          </div>
+          <div class="proto-stat">
+            <span class="lbl">EXPECTED ACTION</span>
+            <span class="val code-font" id="expected-action-text">ACTION_IDLE</span>
+          </div>
+          <div class="proto-stat">
+            <span class="lbl">OBSERVED ACTION</span>
+            <span class="val code-font" id="observed-action-text">ACTION_IDLE</span>
+          </div>
+          <div class="proto-stat">
+            <span class="lbl">COMPLETION</span>
+            <span class="val highlight" id="completion-text">0 / 10 (0.0%)</span>
+          </div>
+        </div>
+
+        <!-- 10-Step Interactive Protocol Stepper with Timestamps -->
+        <div class="protocol-stepper" id="protocol-stepper">
+          <!-- Step Chips dynamically injected via JS -->
+        </div>
+      </div>
+
+      <!-- Anomaly Monitor Card -->
+      <div class="card anomaly-card" id="anomaly-card">
+        <div class="card-header">
+          <span class="card-label">DETERMINISTIC ANOMALY MONITOR</span>
+          <span class="badge" id="anomaly-status-badge">NORMAL</span>
+        </div>
+        <div class="anomaly-body-grid">
+          <div class="anom-stat">
+            <span class="lbl">ANOMALY SCORE</span>
+            <div class="anom-score-container">
+              <span class="val score-val" id="anomaly-score-text">0.00</span>
+              <div class="score-bar-bg">
+                <div class="score-bar-fill" id="anomaly-score-bar" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="anom-stat">
+            <span class="lbl">LAST ANOMALY TYPE</span>
+            <span class="val code-font" id="last-anomaly-type">NONE</span>
+          </div>
+        </div>
+        <div class="anomaly-message-box" id="anomaly-message-box">
+          System in nominal alignment with protocol definition.
+        </div>
+      </div>
+
+      <!-- Mission Summary Card -->
+      <div class="card mission-summary-card">
+        <div class="card-header">
+          <span class="card-label">MISSION SUMMARY & EXECUTIVE TELEMETRY</span>
+          <span class="badge badge-tech" id="mission-status-badge">STANDBY</span>
+        </div>
+        <div class="mission-summary-grid">
+          <div class="summary-item">
+            <span class="lbl">PROTOCOL ID</span>
+            <span class="val" id="sum-protocol">HOME_DEMO_PROTOCOL_01</span>
+          </div>
+          <div class="summary-item">
+            <span class="lbl">SESSION ID</span>
+            <span class="val" id="sum-session">SES_001_NOMINAL</span>
+          </div>
+          <div class="summary-item">
+            <span class="lbl">COMPLETED / REMAINING</span>
+            <span class="val highlight" id="sum-steps">0 / 10 (10 Left)</span>
+          </div>
+          <div class="summary-item">
+            <span class="lbl">MISSION DURATION</span>
+            <span class="val" id="sum-duration">00:00.0s</span>
+          </div>
+          <div class="summary-item">
+            <span class="lbl">PROTOCOL ANOMALIES</span>
+            <span class="val" id="sum-anomalies">0 Events (Max 0.00)</span>
+          </div>
+          <div class="summary-item">
+            <span class="lbl">HAR UNCERTAIN</span>
+            <span class="val" id="sum-uncertain">0 Events</span>
+          </div>
+          <div class="summary-item">
+            <span class="lbl">AVG HAR CONFIDENCE</span>
+            <span class="val status-ok" id="sum-avg-conf">100.0%</span>
+          </div>
+          <div class="summary-item">
+            <span class="lbl">FINAL STATUS</span>
+            <span class="val highlight" id="sum-final-status">STANDBY</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Bottom Row: System Telemetry & Event History ───────────────── -->
+    <section class="panel telemetry-panel">
+      <div class="panel-header">
+        <div class="panel-title">PIPELINE LATENCY BREAKDOWN (ms)</div>
+        <div class="telemetry-summary" id="perf-summary">PIPELINE: 0.0 ms | STREAM FPS: 0.0</div>
+      </div>
+      <div class="latency-grid">
+        <div class="lat-box">
+          <span class="lbl">YOLO DETECTOR</span>
+          <span class="val" id="lat-yolo">0.0 ms</span>
+        </div>
+        <div class="lat-box">
+          <span class="lbl">MEDIAPIPE POSE</span>
+          <span class="val" id="lat-pose">0.0 ms</span>
+        </div>
+        <div class="lat-box">
+          <span class="lbl">HAND TRACKING</span>
+          <span class="val" id="lat-hands">0.0 ms</span>
+        </div>
+        <div class="lat-box">
+          <span class="lbl">HOI ANALYSIS</span>
+          <span class="val" id="lat-hoi">0.0 ms</span>
+        </div>
+        <div class="lat-box">
+          <span class="lbl">HAR (BiGRU)</span>
+          <span class="val" id="lat-har">0.0 ms</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event / Telemetry Audit Table -->
+    <section class="panel events-panel">
+      <div class="panel-header">
+        <div class="panel-title">TELEMETRY AUDIT & TRANSITION STREAM</div>
+        <button class="btn btn-small" onclick="clearEventLog()">CLEAR VIEW</button>
+      </div>
+      <div class="event-log-container">
+        <table class="event-table">
+          <thead>
+            <tr>
+              <th>TIME</th>
+              <th>ACTION DETECTED</th>
+              <th>CONFIDENCE</th>
+              <th>STEP</th>
+              <th>STATUS</th>
+              <th>ANOMALY SCORE</th>
+            </tr>
+          </thead>
+          <tbody id="event-log-tbody">
+            <tr>
+              <td colspan="6" class="empty-log-msg">No transitions recorded. Start live pipeline to monitor events.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Scientific Architecture Footer ─────────────────────────────────── -->
+  <footer class="app-footer">
+    <div class="footer-attribution">
+      <strong>Scientific System Attribution:</strong> 
+      Perception & HAR (YOLOv8 + MediaPipe Pose/Hands + HOI + Conv1D-BiGRU-Attention Neural Classifier) 
+      | Deterministic Protocol Intelligence (Finite State Machine + Rule-Based Anomaly Scoring).
+      <br />
+      <em>AI/ML-based astronaut activity recognition and protocol monitoring prototype. Evaluated on SES_001_NOMINAL protocol session.</em>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

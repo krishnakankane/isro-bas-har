@@ -1,0 +1,129 @@
+{
+  "_notice": "HOME DEMONSTRATION PROTOCOL FOR ISRO BAS HAR. Formulated for practical home-based baseline recording, temporal HAR annotation, and sequence verification. The engine dynamically ingests any JSON protocol definition.",
+  "protocol_id": "HOME_DEMO_PROTOCOL_01",
+  "protocol_name": "Home Demonstration: 10-Step Object Handling & Container Protocol",
+  "description": "Standardized home-friendly 10-step protocol designed to evaluate real-time activity recognition, sequence validation, and error detection.",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "step_id": 1,
+      "name": "IDLE",
+      "description": "Remain still in the starting position for a few seconds.",
+      "required_objects": [],
+      "expected_action": "ACTION_IDLE",
+      "preconditions": [],
+      "min_duration_sec": 1.0,
+      "max_duration_sec": 15.0,
+      "voice_prompt_on_start": "Remain still in starting position.",
+      "voice_prompt_on_complete": "Baseline idle confirmed. Step one complete."
+    },
+    {
+      "step_id": 2,
+      "name": "SANITIZE",
+      "description": "Pick up hand sanitizer and sanitize the bottle/container.",
+      "required_objects": ["sanitizer", "bottle"],
+      "expected_action": "ACTION_SANITIZE",
+      "preconditions": [1],
+      "min_duration_sec": 2.0,
+      "max_duration_sec": 30.0,
+      "voice_prompt_on_start": "Please sanitize workspace and container.",
+      "voice_prompt_on_complete": "Sanitization complete."
+    },
+    {
+      "step_id": 3,
+      "name": "HOLD_BOTTLE",
+      "description": "Pick up a bottle and hold it clearly for a few seconds.",
+      "required_objects": ["bottle"],
+      "expected_action": "ACTION_HOLD_BOTTLE",
+      "preconditions": [2],
+      "min_duration_sec": 1.5,
+      "max_duration_sec": 20.0,
+      "voice_prompt_on_start": "Pick up and hold the bottle.",
+      "voice_prompt_on_complete": "Bottle hold confirmed."
+    },
+    {
+      "step_id": 4,
+      "name": "PLACE_BOTTLE",
+      "description": "Place the bottle back on the table.",
+      "required_objects": ["bottle"],
+      "expected_action": "ACTION_PLACE_BOTTLE",
+      "preconditions": [3],
+      "min_duration_sec": 1.0,
+      "max_duration_sec": 15.0,
+      "voice_prompt_on_start": "Place the bottle back on the table.",
+      "voice_prompt_on_complete": "Bottle returned to table."
+    },
+    {
+      "step_id": 5,
+      "name": "HOLD_BOX",
+      "description": "Pick up a small box and hold it clearly.",
+      "required_objects": ["box"],
+      "expected_action": "ACTION_HOLD_BOX",
+      "preconditions": [4],
+      "min_duration_sec": 1.5,
+      "max_duration_sec": 20.0,
+      "voice_prompt_on_start": "Pick up and hold the small box.",
+      "voice_prompt_on_complete": "Box hold confirmed."
+    },
+    {
+      "step_id": 6,
+      "name": "OPEN_BOX",
+      "description": "Open the box and briefly inspect it.",
+      "required_objects": ["box"],
+      "expected_action": "ACTION_OPEN_BOX",
+      "preconditions": [5],
+      "min_duration_sec": 1.5,
+      "max_duration_sec": 20.0,
+      "voice_prompt_on_start": "Open the box and inspect contents.",
+      "voice_prompt_on_complete": "Box open."
+    },
+    {
+      "step_id": 7,
+      "name": "PICK_OBJECT",
+      "description": "Pick up a small harmless object from the box.",
+      "required_objects": ["box", "small_object"],
+      "expected_action": "ACTION_PICK_OBJECT",
+      "preconditions": [6],
+      "min_duration_sec": 1.0,
+      "max_duration_sec": 20.0,
+      "voice_prompt_on_start": "Pick up the object from the box.",
+      "voice_prompt_on_complete": "Object retrieved from box."
+    },
+    {
+      "step_id": 8,
+      "name": "TRANSFER_OBJECT",
+      "description": "Move the object from the box to another clearly defined location/container.",
+      "required_objects": ["small_object", "target_container"],
+      "expected_action": "ACTION_TRANSFER_OBJECT",
+      "preconditions": [7],
+      "min_duration_sec": 1.5,
+      "max_duration_sec": 25.0,
+      "voice_prompt_on_start": "Transfer object to target container.",
+      "voice_prompt_on_complete": "Object transferred."
+    },
+    {
+      "step_id": 9,
+      "name": "RETURN_OBJECT",
+      "description": "Pick up the object and return it to the box.",
+      "required_objects": ["small_object", "box"],
+      "expected_action": "ACTION_RETURN_OBJECT",
+      "preconditions": [8],
+      "min_duration_sec": 1.5,
+      "max_duration_sec": 25.0,
+      "voice_prompt_on_start": "Return the object to the box.",
+      "voice_prompt_on_complete": "Object returned to box."
+    },
+    {
+      "step_id": 10,
+      "name": "CLOSE_BOX",
+      "description": "Close the box and place it back in its original position.",
+      "required_objects": ["box"],
+      "expected_action": "ACTION_CLOSE_BOX",
+      "preconditions": [9],
+      "min_duration_sec": 1.0,
+      "max_duration_sec": 20.0,
+      "voice_prompt_on_start": "Close the box and place it back.",
+      "voice_prompt_on_complete": "Experiment protocol completed successfully."
+    }
+  ]
+}
